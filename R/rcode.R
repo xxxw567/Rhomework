@@ -8,9 +8,6 @@
 #' @return \code{fars_read} import and read the file as a data frame tbl, if it exists.
 #'   If it does not exist an error message will be returned.
 #'
-#' @examples
-#' fars_read("data/my_fars_data.csv")
-#'
 #' @importFrom readr read_csv
 #' @importFrom dplyr tbl_df
 #'
@@ -35,9 +32,6 @@ fars_read <- function(filename) {
 #' @return \code{make_file} will return a string that speficy the file name based on the year provided.
 #'   For example, if 2016 is provided as the year, the returned name will be
 #'   "accident_2017.csv.bz2".
-#'
-#' @examples
-#' make_filename(2017)
 #'
 #' @export
 make_filename <- function(year) {
@@ -64,9 +58,7 @@ make_filename <- function(year) {
 #'
 #' @seealso \code{\link{make_filename}} for naming convention
 #'
-#' @examples
-#' fars_read_years(2015:2016)
-#'
+
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #'
@@ -97,15 +89,12 @@ fars_read_years <- function(years) {
 #'
 #' @return \code{fars_summarize_years} will return data frame.
 #'
-#' @examples
-#' fars_summarize_years(2015:2016)
-#'
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarize
 #' @importFrom tidyr spread
 #'
-#' @export
+
 fars_summarize_years <- function(years) {
   dat_list <- fars_read_years(years)
   dplyr::bind_rows(dat_list) %>%
@@ -126,9 +115,6 @@ fars_summarize_years <- function(years) {
 #'   state and year. If there are no accidents in the specified state and year, a
 #'   notification will be provided. If an invalid state number is provided
 #'   an error will be returned.
-#'
-#' @examples
-#' fars_map_state(2, 2015)
 #'
 #' @importFrom dplyr filter
 #' @importFrom maps map

@@ -2,10 +2,16 @@ Package: Rhomework
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
+Author: Xia Yiwei
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL
 Encoding: UTF-8
-LazyData: true
+Depends: R (>= 3.0.1)
+RoxygenNote: 5.0.1
+Suggests: testthat,
+    knitr,
+    rmarkdown
+Imports: dplyr,readr,maps,graphics,tidyr
+VignetteBuilder: knitr
