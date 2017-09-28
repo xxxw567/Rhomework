@@ -9,4 +9,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This package is used to fulfill the requirment of building R packages in Coursera. 
+
+This package provides essential function to analyse the FARS (Fatality Analysis Reporting System) dataset
+
+```{r, echo=FALSE}
+library(Rhomework)
+library(magrittr)
+```
