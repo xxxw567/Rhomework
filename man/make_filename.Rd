@@ -2,20 +2,22 @@
 % Please edit documentation in R/rcode.R
 \name{make_filename}
 \alias{make_filename}
-\title{Make File Name}
+\title{Generate filename}
 \usage{
 make_filename(year)
 }
 \arguments{
-\item{year}{an integer specifying the year to be added to the file name}
+\item{year}{The year of interest provided as either character or numeric}
 }
 \value{
-\code{make_file} will return a string that speficy the file name based on the year provided.
-  For example, if 2016 is provided as the year, the returned name will be
-  "accident_2017.csv.bz2".
+A character vector  in the following form: \code{accident_<year>.csv.bz2}
 }
 \description{
-\code{make_file} creates a name for the accident csv file based on the
-  year provided.
+Generates a filename including the provided \code{year}.
+}
+\examples{
+\dontrun{
+fars_filename <- make_filename(2015)
+}
 }
 

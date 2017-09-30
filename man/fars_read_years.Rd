@@ -2,28 +2,27 @@
 % Please edit documentation in R/rcode.R
 \name{fars_read_years}
 \alias{fars_read_years}
-\title{Read in Fatality Analysis Reporting System data files}
+\title{Extract monthly data}
 \usage{
 fars_read_years(years)
 }
 \arguments{
-\item{years}{an integer specifying the year to be added to the file name}
+\item{years}{Years of interest provided as list or vector}
 }
 \value{
-\code{fars_read_years} will search for the file names based on the
-  years provided. For example, if 2015:2016 is provided \code{fars_read_years}
-  will search for the following files:
-  \itemize{
-    \item "accident_2015.csv.bz2"
-    \item "accident_2016.csv.bz2"
-  }
-  If the files exist a list containing the respective data will be returned.
-  If the files do not exist an error will be returned stating the invalid year(s).
+A list object. Each element holds monthly data for one year as
+ data.frame with columns `MONTH` and `year`
 }
 \description{
-\code{fars_read_years} will read in multiple data files based on the years provided.
+For the specified years this function returns their monthly data. If there
+is no data for the specified year available, the function will return an
+error.
 }
-\seealso{
-\code{\link{make_filename}} for naming convention
+\examples{
+\dontrun{
+fars_year_data <- fars_read_years(2013)
+fars_year_data <- fars_read_years(c(2013, 2015))
+}
+
 }
 

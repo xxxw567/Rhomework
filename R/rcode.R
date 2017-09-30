@@ -1,18 +1,19 @@
-#' Read in the US National Highway Traffic Safety Administration's Fatality Analysis Reporting System data file
+#' Read csv file
 #'
-#' \code{fars_read} reads in the US National Highway Traffic Safety
-#'   Administration's Fatality Analysis Reporting System data.
+#' Reads data from a csv file. If the file does not exist, the function will
+#' stop and return an error.
 #'
-#' @param filename a string containing the name of csv file
+#' @param filename The name of the csv file to read
 #'
-#' @return \code{fars_read} import and read the file as a data frame tbl, if it exists.
-#'   If it does not exist an error message will be returned.
+#' @return A data.frame object containing the data read from \code{filename}
 #'
-#' @importFrom readr read_csv
+#' @examples
+#' \dontrun{
+#' fars_data <- fars_read("accident_2015.csv.bz2")
+#' }
+#'
 #' @importFrom dplyr tbl_df
-#'
-#' @export
-
+#' @importFrom readr read_csv
 fars_read <- function(filename) {
   if(!file.exists(filename))
     stop("file '", filename, "' does not exist")
@@ -22,48 +23,41 @@ fars_read <- function(filename) {
   dplyr::tbl_df(data)
 }
 
-#' Make File Name
+#' Generate filename
 #'
-#' \code{make_file} creates a name for the accident csv file based on the
-#'   year provided.
+#' Generates a filename including the provided \code{year}.
 #'
-#' @param year an integer specifying the year to be added to the file name
+#' @param year The year of interest provided as either character or numeric
 #'
-#' @return \code{make_file} will return a string that speficy the file name based on the year provided.
-#'   For example, if 2016 is provided as the year, the returned name will be
-#'   "accident_2017.csv.bz2".
+#' @return A character vector  in the following form: \code{accident_<year>.csv.bz2}
 #'
-#' @export
+#' @examples
+#' \dontrun{
+#' fars_filename <- make_filename(2015)
+#' }
 make_filename <- function(year) {
   year <- as.integer(year)
   sprintf("accident_%d.csv.bz2", year)
 }
 
-
-#' Read in Fatality Analysis Reporting System data files
+#' Extract monthly data
 #'
-#' \code{fars_read_years} will read in multiple data files based on the years provided.
+#' For the specified years this function returns their monthly data. If there
+#' is no data for the specified year available, the function will return an
+#' error.
 #'
-#' @param years an integer specifying the year to be added to the file name
+#' @param years Years of interest provided as list or vector
 #'
-#' @return \code{fars_read_years} will search for the file names based on the
-#'   years provided. For example, if 2015:2016 is provided \code{fars_read_years}
-#'   will search for the following files:
-#'   \itemize{
-#'     \item "accident_2015.csv.bz2"
-#'     \item "accident_2016.csv.bz2"
-#'   }
-#'   If the files exist a list containing the respective data will be returned.
-#'   If the files do not exist an error will be returned stating the invalid year(s).
+#' @return A list object. Each element holds monthly data for one year as
+#'  data.frame with columns `MONTH` and `year`
 #'
-#' @seealso \code{\link{make_filename}} for naming convention
+#' @examples
+#' \dontrun{
+#' fars_year_data <- fars_read_years(2013)
+#' fars_year_data <- fars_read_years(c(2013, 2015))
+#' }
 #'
-
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#'
-#' @export
-
+#' @importFrom dplyr mutate select %>%
 fars_read_years <- function(years) {
   lapply(years, function(year) {
     file <- make_filename(year)
@@ -78,23 +72,25 @@ fars_read_years <- function(years) {
   })
 }
 
-
-#' Summarize Observations by Year
+#' Summarize years
 #'
-#' \code{fars_summarize_years} will read in multiple Fatality Analysis Reporting
-#'   System data files based on the years provided and summarise the number of
-#'   observations by year and month.
+#' For the specified years this function summarizes their data i.e., it return
+#' how many incidients occured in each month.
 #'
-#' @param years an integer specifying the year to be added to the file name
+#' @inheritParams fars_read_years
 #'
-#' @return \code{fars_summarize_years} will return data frame.
+#' @return A data.frame that provides the amount of monthly data per year
 #'
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarize
+#' @importFrom dplyr group_by summarize %>%
 #' @importFrom tidyr spread
 #'
-
+#' @examples
+#' \dontrun{
+#' fars_summary <- fars_summarize_years(2013)
+#' fars_summary <- fars_summarize_years(c(2013, 2014))
+#' }
+#'
+#' @export
 fars_summarize_years <- function(years) {
   dat_list <- fars_read_years(years)
   dplyr::bind_rows(dat_list) %>%
@@ -103,25 +99,26 @@ fars_summarize_years <- function(years) {
     tidyr::spread(year, n)
 }
 
-#' Map State Accidents
+#' Plot incidents on map
 #'
-#' \code{fars_map_state} will plot the accidents on a map for a given state
-#'   and year.
+#' If there is data for a specified state.num, \code{fars_map_state} plots
+#' incidents on a map. The canvas limit is set to greater than 900 Longitude
+#' and 90 Latitude. If there is no data for a specified \code{state.num} the
+#' function exits with an error.
 #'
-#' @param state.num an integer specifying the number of State
-#' @param year an integer specifying the year to be added to the file name
+#' @param state.num State number as one-dimensional numeric vector
+#' @inheritParams make_filename
 #'
-#' @return \code{fars_map_state} will return a map plot of accidents for the given
-#'   state and year. If there are no accidents in the specified state and year, a
-#'   notification will be provided. If an invalid state number is provided
-#'   an error will be returned.
+#' @examples
+#' \dontrun{
+#' fars_map_state(1, 2013)
+#' }
 #'
 #' @importFrom dplyr filter
-#' @importFrom maps map
 #' @importFrom graphics points
+#' @importFrom maps map
 #'
 #' @export
-
 fars_map_state <- function(state.num, year) {
   filename <- make_filename(year)
   data <- fars_read(filename)

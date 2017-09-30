@@ -15,3 +15,4 @@ Suggests: testthat,
     rmarkdown
 Imports: dplyr,readr,maps,graphics,tidyr
 VignetteBuilder: knitr
+LazyData: True

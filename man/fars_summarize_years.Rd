@@ -2,19 +2,25 @@
 % Please edit documentation in R/rcode.R
 \name{fars_summarize_years}
 \alias{fars_summarize_years}
-\title{Summarize Observations by Year}
+\title{Summarize years}
 \usage{
 fars_summarize_years(years)
 }
 \arguments{
-\item{years}{an integer specifying the year to be added to the file name}
+\item{years}{Years of interest provided as list or vector}
 }
 \value{
-\code{fars_summarize_years} will return data frame.
+A data.frame that provides the amount of monthly data per year
 }
 \description{
-\code{fars_summarize_years} will read in multiple Fatality Analysis Reporting
-  System data files based on the years provided and summarise the number of
-  observations by year and month.
+For the specified years this function summarizes their data i.e., it return
+how many incidients occured in each month.
+}
+\examples{
+\dontrun{
+fars_summary <- fars_summarize_years(2013)
+fars_summary <- fars_summarize_years(c(2013, 2014))
+}
+
 }
 

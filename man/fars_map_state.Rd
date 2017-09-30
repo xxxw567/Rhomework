@@ -2,23 +2,25 @@
 % Please edit documentation in R/rcode.R
 \name{fars_map_state}
 \alias{fars_map_state}
-\title{Map State Accidents}
+\title{Plot incidents on map}
 \usage{
 fars_map_state(state.num, year)
 }
 \arguments{
-\item{state.num}{an integer specifying the number of State}
+\item{state.num}{State number as one-dimensional numeric vector}
 
-\item{year}{an integer specifying the year to be added to the file name}
-}
-\value{
-\code{fars_map_state} will return a map plot of accidents for the given
-  state and year. If there are no accidents in the specified state and year, a
-  notification will be provided. If an invalid state number is provided
-  an error will be returned.
+\item{year}{The year of interest provided as either character or numeric}
 }
 \description{
-\code{fars_map_state} will plot the accidents on a map for a given state
-  and year.
+If there is data for a specified state.num, \code{fars_map_state} plots
+incidents on a map. The canvas limit is set to greater than 900 Longitude
+and 90 Latitude. If there is no data for a specified \code{state.num} the
+function exits with an error.
+}
+\examples{
+\dontrun{
+fars_map_state(1, 2013)
+}
+
 }
 

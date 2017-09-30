@@ -2,19 +2,24 @@
 % Please edit documentation in R/rcode.R
 \name{fars_read}
 \alias{fars_read}
-\title{Read in the US National Highway Traffic Safety Administration's Fatality Analysis Reporting System data file}
+\title{Read csv file}
 \usage{
 fars_read(filename)
 }
 \arguments{
-\item{filename}{a string containing the name of csv file}
+\item{filename}{The name of the csv file to read}
 }
 \value{
-\code{fars_read} import and read the file as a data frame tbl, if it exists.
-  If it does not exist an error message will be returned.
+A data.frame object containing the data read from \code{filename}
 }
 \description{
-\code{fars_read} reads in the US National Highway Traffic Safety
-  Administration's Fatality Analysis Reporting System data.
+Reads data from a csv file. If the file does not exist, the function will
+stop and return an error.
+}
+\examples{
+\dontrun{
+fars_data <- fars_read("accident_2015.csv.bz2")
+}
+
 }
 
