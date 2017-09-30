@@ -9,10 +9,31 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
 This package provides essential function to analyse the FARS (Fatality Analysis Reporting System) dataset
 
 ```{r, echo=FALSE}
 library(Rhomework)
 library(magrittr)
 ```
+
+# Step one
+Read the data using functions `fars_read` and `make_filename`.
+Suppose we want to read 2015 data.
+
+
+```{r, echo=FALSE}
+setwd(system.file("data", package="Rhomework"))
+fars_map_state(1, 2013)
+```
+
+
+The latter `fars_map_state` allows you to plot the incidents within a specified state on a map. 
+E.g. the incidents map of the first state in the year 2015 can be writen as
+
+
+```{r, echo=FALSE}
+fars_map_state(state.num = 1, year = 2015)
+```
+
+
+
