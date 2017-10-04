@@ -19,7 +19,7 @@ library(maps)
 list.files(system.file("extdata", package = "Rhomework"))
 ```
 
-#Function `fars_map_state`
+#Function `fars_map_state` 
 `fars_map_state` allows you to plot the incidents within a specified state on a map. E.g. the incidents map of the first state in the year 2015 can be writen as
 
 
