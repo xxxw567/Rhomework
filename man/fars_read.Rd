@@ -2,24 +2,35 @@
 % Please edit documentation in R/rcode.R
 \name{fars_read}
 \alias{fars_read}
-\title{Read csv file}
+\title{Read file with FARS data}
 \usage{
 fars_read(filename)
 }
 \arguments{
-\item{filename}{The name of the csv file to read}
+\item{filename}{A character string with the name of the file to read, see
+notes.}
 }
 \value{
-A data.frame object containing the data read from \code{filename}
+A data frame with data readed from the csv file, or an error if the
+  file does not exists.
 }
 \description{
-Reads data from a csv file. If the file does not exist, the function will
-stop and return an error.
+This function reads data from .csv file, stored on disk, from the \strong{US
+National Highway Traffic Safety Administration's} \emph{Fatality Analysis
+Reporting System} (FARS), which is a nationwide census, providing the
+American public yearly data, regarding fatal injuries suffered in motor
+vehicle traffic crashes.
 }
-\examples{
-\dontrun{
-fars_data <- fars_read("accident_2015.csv.bz2")
+\details{
+For more information, see:
+\itemize{
+  \item{\url{https://www.nhtsa.gov/research-data/fatality-analysis-reporting-system-fars}}
+  \item{\url{https://en.wikipedia.org/wiki/Fatality_Analysis_Reporting_System}}
 }
-
 }
-
+\note{
+To generate file name use: \code{\link{make_filename}}
+}
+\seealso{
+\link{make_filename}
+}

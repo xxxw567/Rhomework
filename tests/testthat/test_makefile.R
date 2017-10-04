@@ -1,5 +1,6 @@
-library(testthat)
-library(Rhomework)
-test_that("expect_that work successfully",
-          expect_that(make_filename(2017), equals("accident_2017.csv.bz2"))
-)
+test_that(".csv data files are available", {
+  testthat::expect_equal(list.files(system.file("extdata", package = "Rhomework")),
+                         c("accident_2013.csv.bz2",
+                           "accident_2014.csv.bz2",
+                           "accident_2015.csv.bz2"))
+})

@@ -2,27 +2,24 @@
 % Please edit documentation in R/rcode.R
 \name{fars_read_years}
 \alias{fars_read_years}
-\title{Extract monthly data}
+\title{Read FARS years}
 \usage{
 fars_read_years(years)
 }
 \arguments{
-\item{years}{Years of interest provided as list or vector}
+\item{years}{A vector with a list of years}
 }
 \value{
-A list object. Each element holds monthly data for one year as
- data.frame with columns `MONTH` and `year`
+A data.frame including entries in data by month, or NULL if the
+ \code{year} is not valid
 }
 \description{
-For the specified years this function returns their monthly data. If there
-is no data for the specified year available, the function will return an
-error.
+Ancillary function used by \code{fars_summarize_years}
 }
-\examples{
-\dontrun{
-fars_year_data <- fars_read_years(2013)
-fars_year_data <- fars_read_years(c(2013, 2015))
-}
+\seealso{
+\link{fars_read}
 
-}
+\link{make_filename}
 
+\link{fars_summarize_years}
+}

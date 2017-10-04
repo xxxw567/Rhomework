@@ -11,14 +11,23 @@ vignette: >
 
 This package provides essential function to analyse the FARS (Fatality Analysis Reporting System) dataset
 
+#the dataset is in
+
+```{r}
+library(Rhomework)
+library(maps)
+list.files(system.file("extdata", package = "Rhomework"))
+```
+
+#Function `fars_map_state`
 `fars_map_state` allows you to plot the incidents within a specified state on a map. E.g. the incidents map of the first state in the year 2015 can be writen as
 
 
 ```{r,eval=FALSE}
-library(Rhomework)
 fars_map_state(1, 2015)
 ```
 
+#Function `fars_summarize_years`
 `fars_summarize_years` displays the total records from give years: 
 
 ```{r,eval=FALSE}

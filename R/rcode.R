@@ -1,19 +1,28 @@
-#' Read csv file
+#' Read file with FARS data
 #'
-#' Reads data from a csv file. If the file does not exist, the function will
-#' stop and return an error.
+#' This function reads data from .csv file, stored on disk, from the \strong{US
+#' National Highway Traffic Safety Administration's} \emph{Fatality Analysis
+#' Reporting System} (FARS), which is a nationwide census, providing the
+#' American public yearly data, regarding fatal injuries suffered in motor
+#' vehicle traffic crashes.
 #'
-#' @param filename The name of the csv file to read
-#'
-#' @return A data.frame object containing the data read from \code{filename}
-#'
-#' @examples
-#' \dontrun{
-#' fars_data <- fars_read("accident_2015.csv.bz2")
+#' @details For more information, see:
+#' \itemize{
+#'   \item{\url{https://www.nhtsa.gov/research-data/fatality-analysis-reporting-system-fars}}
+#'   \item{\url{https://en.wikipedia.org/wiki/Fatality_Analysis_Reporting_System}}
 #' }
-#'
-#' @importFrom dplyr tbl_df
 #' @importFrom readr read_csv
+#' @importFrom dplyr tbl_df
+#'
+#' @param filename A character string with the name of the file to read, see
+#'   notes.
+#'
+#' @return A data frame with data readed from the csv file, or an error if the
+#'   file does not exists.
+#'
+#' @note To generate file name use: \code{\link{make_filename}}
+#' @seealso \link{make_filename}
+#' @export
 fars_read <- function(filename) {
   if(!file.exists(filename))
     stop("file '", filename, "' does not exist")
@@ -23,48 +32,50 @@ fars_read <- function(filename) {
   dplyr::tbl_df(data)
 }
 
-#' Generate filename
+
+#' Make data file name
 #'
-#' Generates a filename including the provided \code{year}.
+#' Make .csv data file name related to the given \code{year}
+#' The function does not check if the file is available.
 #'
-#' @param year The year of interest provided as either character or numeric
+#' @param year A string or an integer with the input \code{year}
 #'
-#' @return A character vector  in the following form: \code{accident_<year>.csv.bz2}
+#' @return This function returns a string with the data file name for a given
+#'   year, and the file path within the package.
 #'
-#' @examples
-#' \dontrun{
-#' fars_filename <- make_filename(2015)
-#' }
+#' @seealso \link{fars_read}
+#' @export
 make_filename <- function(year) {
   year <- as.integer(year)
-  sprintf("accident_%d.csv.bz2", year)
+  system.file("extdata",
+              sprintf("accident_%d.csv.bz2", year),
+              package = "fars",
+              mustWork = TRUE)
 }
 
-#' Extract monthly data
+#' Read FARS years
 #'
-#' For the specified years this function returns their monthly data. If there
-#' is no data for the specified year available, the function will return an
-#' error.
+#' Ancillary function used by \code{fars_summarize_years}
+#' @param years A vector with a list of years
 #'
-#' @param years Years of interest provided as list or vector
+#' @importFrom dplyr mutate_
+#' @importFrom dplyr select_
+#' @importFrom magrittr "%>%"
+#
+#' @return A data.frame including entries in data by month, or NULL if the
+#'  \code{year} is not valid
 #'
-#' @return A list object. Each element holds monthly data for one year as
-#'  data.frame with columns `MONTH` and `year`
-#'
-#' @examples
-#' \dontrun{
-#' fars_year_data <- fars_read_years(2013)
-#' fars_year_data <- fars_read_years(c(2013, 2015))
-#' }
-#'
-#' @importFrom dplyr mutate select %>%
+#' @seealso \link{fars_read}
+#' @seealso \link{make_filename}
+#' @seealso \link{fars_summarize_years}
+#' @export
 fars_read_years <- function(years) {
   lapply(years, function(year) {
     file <- make_filename(year)
     tryCatch({
       dat <- fars_read(file)
-      dplyr::mutate(dat, year = year) %>%
-        dplyr::select(MONTH, year)
+      dplyr::mutate_(dat,  year = "YEAR") %>%
+        dplyr::select_("MONTH", "year")
     }, error = function(e) {
       warning("invalid year: ", year)
       return(NULL)
@@ -72,61 +83,106 @@ fars_read_years <- function(years) {
   })
 }
 
-#' Summarize years
+#' Summarize FARS data by years
 #'
-#' For the specified years this function summarizes their data i.e., it return
-#' how many incidients occured in each month.
+#' This function summarizes yearly accidents data, by month
+#' @param years A vector with a list of years to summarize by.
 #'
-#' @inheritParams fars_read_years
-#'
-#' @return A data.frame that provides the amount of monthly data per year
-#'
-#' @importFrom dplyr group_by summarize %>%
-#' @importFrom tidyr spread
-#'
-#' @examples
-#' \dontrun{
-#' fars_summary <- fars_summarize_years(2013)
-#' fars_summary <- fars_summarize_years(c(2013, 2014))
-#' }
-#'
+#' @return A data.frame with number of accidents by years summarized by month
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr group_by_
+#' @importFrom dplyr summarize_
+#' @importFrom tidyr spread_
+#' @importFrom magrittr "%>%"
+#' @seealso \link{fars_read_years}
 #' @export
 fars_summarize_years <- function(years) {
   dat_list <- fars_read_years(years)
   dplyr::bind_rows(dat_list) %>%
-    dplyr::group_by(year, MONTH) %>%
-    dplyr::summarize(n = n()) %>%
-    tidyr::spread(year, n)
+    dplyr::group_by_("year", "MONTH") %>%
+    dplyr::summarize_(n = "n()") %>%
+    tidyr::spread_("year", "n")
 }
 
-#' Plot incidents on map
+#' Display accidents map by state and year
 #'
-#' If there is data for a specified state.num, \code{fars_map_state} plots
-#' incidents on a map. The canvas limit is set to greater than 900 Longitude
-#' and 90 Latitude. If there is no data for a specified \code{state.num} the
-#' function exits with an error.
-#'
-#' @param state.num State number as one-dimensional numeric vector
-#' @inheritParams make_filename
-#'
-#' @examples
-#' \dontrun{
-#' fars_map_state(1, 2013)
+#' Displays a plot with a state map including the accidents location by year
+#' If the \code{state.num} is invalid the function shows an error
+#' @param state.num An Integer with the State Code
+#' \tabular{cc}{
+#'   \strong{State Code} \tab \strong{State Name}    \cr
+#'   01 \tab  Alabama              \cr
+#'   02 \tab  Alaska               \cr
+#'   04 \tab  Arizona              \cr
+#'   05 \tab  Arkansas             \cr
+#'   06 \tab  California           \cr
+#'   08 \tab  Colorado             \cr
+#'   09 \tab  Connecticut          \cr
+#'   10 \tab  Delaware             \cr
+#'   11 \tab  District of Columbia \cr
+#'   12 \tab  Florida              \cr
+#'   13 \tab  Georgia              \cr
+#'   15 \tab  Hawaii               \cr
+#'   16 \tab  Idaho                \cr
+#'   17 \tab  Illinois             \cr
+#'   18 \tab  Indiana              \cr
+#'   19 \tab  Iowa                 \cr
+#'   20 \tab  Kansas               \cr
+#'   21 \tab  Kentucky             \cr
+#'   22 \tab  Louisiana            \cr
+#'   23 \tab  Maine                \cr
+#'   24 \tab  Maryland             \cr
+#'   25 \tab  Massachusetts        \cr
+#'   26 \tab  Michigan             \cr
+#'   27 \tab  Minnesota            \cr
+#'   28 \tab  Mississippi          \cr
+#'   29 \tab  Missouri             \cr
+#'   30 \tab  Montana              \cr
+#'   31 \tab  Nebraska             \cr
+#'   32 \tab  Nevada               \cr
+#'   33 \tab  New Hampshire        \cr
+#'   34 \tab  New Jersey           \cr
+#'   35 \tab  New Mexico           \cr
+#'   36 \tab  New York             \cr
+#'   37 \tab  North Carolina       \cr
+#'   38 \tab  North Dakota         \cr
+#'   39 \tab  Ohio                 \cr
+#'   40 \tab  Oklahoma             \cr
+#'   41 \tab  Oregon               \cr
+#'   42 \tab  Pennsylvania         \cr
+#'   43 \tab  Puerto Rico          \cr
+#'   44 \tab  Rhode Island         \cr
+#'   45 \tab  South Carolina       \cr
+#'   46 \tab  South Dakota         \cr
+#'   47 \tab  Tennessee            \cr
+#'   48 \tab  Texas                \cr
+#'   49 \tab  Utah                 \cr
+#'   50 \tab  Vermont              \cr
+#'   51 \tab  Virginia             \cr
+#'   52 \tab  Virgin Islands       \cr
+#'   53 \tab  Washington           \cr
+#'   54 \tab  West Virginia        \cr
+#'   55 \tab  Wisconsin            \cr
+#'   56 \tab  Wyoming
 #' }
+#' @param year A string, or an integer, with the input \code{year}
 #'
-#' @importFrom dplyr filter
-#' @importFrom graphics points
 #' @importFrom maps map
-#'
+#' @importFrom dplyr filter_
+#' @importFrom graphics points
+#' @return None
+#' @seealso \link{fars_read}
+#' @seealso \link{make_filename}
+#' @references 2014 FARS/NASS GES Coding and Validation Manual
 #' @export
 fars_map_state <- function(state.num, year) {
   filename <- make_filename(year)
   data <- fars_read(filename)
   state.num <- as.integer(state.num)
-
-  if(!(state.num %in% unique(data$STATE)))
+  if(!(state.num %in% unique(data$STATE))) {
     stop("invalid STATE number: ", state.num)
-  data.sub <- dplyr::filter(data, STATE == state.num)
+  }
+  data.sub <- dplyr::filter_(data, .dots = paste0("STATE==", state.num))
   if(nrow(data.sub) == 0L) {
     message("no accidents to plot")
     return(invisible(NULL))

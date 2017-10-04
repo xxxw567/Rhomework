@@ -1,18 +1,21 @@
-Package: Rhomework
-Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
+Package: Rhomeworknemo
+Title: Read Fatality Analysis Reporting System (FARS) data
+Version: 0.7
 Author: Xia Yiwei
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Maintainer: Xia Yiwei <xiayiweinemo@gmail.com>
+Description: Package contains fuctions to load and process FARS data.
+Depends: R (>= 3.3.3)
 License: GPL
 Encoding: UTF-8
-Depends: R (>= 3.0.1)
-RoxygenNote: 5.0.1
-Suggests: testthat,
-    knitr,
-    rmarkdown
-Imports: dplyr,readr,maps,graphics,tidyr
+LazyData: true
+RoxygenNote: 6.0.1
+Imports:
+   dplyr,
+   maps,
+   readr,
+   tidyr,
+   magrittr
+Suggests: knitr,
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
-LazyData: True
